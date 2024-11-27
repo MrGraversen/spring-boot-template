@@ -37,7 +37,19 @@
         </dependency>
     </dependencies>
 
-    <modules>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${docker-maven.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
+    <modules>
+        <module>apps/spring-boot-3-app</module>
     </modules>
 </project>

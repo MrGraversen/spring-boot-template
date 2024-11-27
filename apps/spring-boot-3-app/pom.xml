@@ -34,7 +34,6 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${docker-maven.version}</version>
                 <configuration>
                     <buildArgs>
                         <JAR_FILE>maven/${project.build.finalName}.jar</JAR_FILE>
@@ -44,7 +43,7 @@
                             <name>${docker-registry}/${docker-image-name}:${docker-image-version}</name>
                             <build>
                                 <contextDir>${basedir}</contextDir>
-                                <dockerFile>${basedir/docker/MinimalJRE21.Dockerfile</dockerFile>
+                                <dockerFile>${basedir}/../../docker/MinimalJRE21.Dockerfile</dockerFile>
                                 <assembly>
                                     <descriptorRef>artifact-with-dependencies</descriptorRef>
                                 </assembly>
