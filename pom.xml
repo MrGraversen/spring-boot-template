@@ -19,6 +19,8 @@
     <properties>
         <java.version>21</java.version>
         <lombok.version>1.18.36</lombok.version>
+        <docker-maven.version>0.45.0</docker-maven.version>
+        <docker-registry>ghcr.io/mrgraversen</docker-registry>
     </properties>
 
     <dependencyManagement>
