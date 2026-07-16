@@ -1,0 +1,12 @@
+name: spring-boot-service-template
+
+services:
+  example-service:
+    image: example-service:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        APP_MODULE: apps/example-service
+    ports:
+      - "8080:8080"

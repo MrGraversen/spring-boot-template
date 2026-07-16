@@ -1,0 +1,12 @@
+.git
+.github
+.idea
+.env
+.env.*
+!.env.example
+**/*.iml
+**/*.log
+**/target
+compose*.yaml
+compose*.yml
+README.md
