@@ -2,6 +2,21 @@
 
 A small, batteries-included starting point for Java microservices.
 
+## Using this template
+
+After creating a repository from this template:
+
+1. Update the project identity in `AGENTS.md` while leaving its template status
+   as `UNINITIALIZED`.
+2. Rename `apps/example-service` and update the module path in the root
+   `pom.xml`, `compose.yaml`, and the GitHub container-image matrix.
+3. Replace the Maven coordinates and `io.graversen.exampleservice` Java
+   package.
+4. Update `spring.application.name`, the container image name, and the HTTP
+   port.
+5. Change the template status in `AGENTS.md` to `ACTIVE`.
+6. Run `mvn verify` and `docker compose up --build`.
+
 ## Baseline
 
 - Java 25
