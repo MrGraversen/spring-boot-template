@@ -164,6 +164,18 @@ implementation, not a cleanup step at the end.
 - Do not leave dead paths, unused parameters, placeholder branches, or duplicate
   implementations after the real path is established.
 
+### Formatting and review
+
+- Target a maximum line width of 120 columns. Do not optimize for a narrow
+  editor viewport or treat a shorter limit as a reason to fragment otherwise
+  readable code.
+- Keep declarations, record components, method signatures, method calls, and
+  exception construction on one line when the complete expression fits within
+  120 columns and remains readable. In particular, do not wrap a line merely
+  because a formatter prefers an earlier syntactic break.
+- When an expression genuinely exceeds 120 columns or becomes difficult to
+  scan, wrap it by logical unit. Prefer one argument, chained operation, or
+  condition per continuation line rather than arbitrary breaks.
 
 ## Template placeholders
 
