@@ -1,0 +1,5 @@
+name: spring-boot-service-template-infrastructure
+
+# Add only external dependencies needed by the initialized project, such as a
+# database or message broker. Applications belong in compose.yaml.
+services: {}

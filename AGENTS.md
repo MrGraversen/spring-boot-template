@@ -40,13 +40,16 @@ After the project identity has been confirmed and applied, change the status to
 - `libraries/`: shared Java libraries.
 - `integrations/`: integration adapters and clients.
 - `docker/Dockerfile`: shared Dockerfile for every Java application.
-- `compose.yaml`: local development stack.
+- `docker/compose.yaml`: full local stack, including applications built from
+  this repository.
+- `docker/compose.infrastructure.yaml`: external infrastructure only, for
+  applications run from IntelliJ or the command line.
 
 ## Commands
 
 ```shell
 mvn --batch-mode --no-transfer-progress verify
-docker compose up --build
+docker compose --file docker/compose.yaml up --build
 ```
 
 To build one application directly:
@@ -64,7 +67,10 @@ docker build --file docker/Dockerfile \
 - Reuse `docker/Dockerfile`; select the application with `APP_MODULE`.
 - Add deployable applications to the matrix in
   `.github/workflows/publish-images.yml`.
-- Keep `compose.yaml` focused on local development.
+- Keep `docker/compose.yaml` focused on the complete local development stack.
+- Put databases, brokers, and other external dependencies in
+  `docker/compose.infrastructure.yaml`; do not place application services in
+  that file.
 - Do not add a Maven Wrapper or Dependabot unless explicitly requested.
 - Do not commit generated `target/` directories.
 
@@ -297,5 +303,5 @@ to `ACTIVE`.
 
 - `mvn verify` passes.
 - Docker or Compose changes are validated with an image build or
-  `docker compose config`.
+  `docker compose --file docker/compose.yaml config`.
 - Documentation and workflow matrices reflect any new application.

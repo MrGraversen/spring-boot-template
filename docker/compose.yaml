@@ -4,7 +4,7 @@ services:
   example-service:
     image: example-service:local
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile
       args:
         APP_MODULE: apps/example-service
