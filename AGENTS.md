@@ -177,6 +177,63 @@ implementation, not a cleanup step at the end.
   scan, wrap it by logical unit. Prefer one argument, chained operation, or
   condition per continuation line rather than arbitrary breaks.
 
+## API engineering
+
+Treat HTTP APIs as durable contracts. Prefer predictable, conventional designs
+over bespoke abstractions.
+
+### Specification first
+
+- The version-controlled OpenAPI specification is the source of truth. Change
+  the specification before changing server or client behavior.
+- Give every operation a unique, stable, descriptive `operationId`, normally a
+  verb followed by the domain noun, such as `getOrder`, `listOrders`, or
+  `createOrder`.
+- Use the same domain language in paths, operation names, schemas, fields,
+  Java code, clients, documentation, and user interfaces. Avoid synonyms and
+  unexplained abbreviations.
+- Define required fields, nullability, validation constraints, formats, status
+  codes, security requirements, and error responses in the specification.
+- Preserve backward compatibility. Make a breaking contract change only with
+  an explicit versioning or migration decision.
+
+### Generated server and clients
+
+- Generate Spring Boot server interfaces and transport models from the OpenAPI
+  specification. Implement generated interfaces or delegates; never generate
+  business or domain logic.
+- Generate React, TypeScript, and other API clients from the same specification.
+  Prefer generated Feign clients for Java consumers.
+- Never edit generated code manually. Pin the generator version and shared
+  configuration so generation is deterministic and reproducible.
+- Keep generated transport types at the API boundary. Map them to domain types
+  instead of exposing entities or internal models through the contract.
+- Wrap a generated client only to add domain ergonomics or cross-cutting
+  behavior. Do not duplicate or fork its generated request and response types.
+- A contract change is not complete until server generation, client generation,
+  compilation, and relevant tests succeed.
+
+### REST design
+
+- Prefer resource-oriented, plural noun paths and use HTTP methods and status
+  codes according to their standard semantics.
+- Use path parameters for resource identity and query parameters for filtering,
+  sorting, and pagination. Paginate collections that can grow without bound.
+- Use custom action endpoints only when the domain operation does not fit a
+  practical resource-oriented model. Do not force awkward abstractions merely
+  to appear RESTful.
+- Apply idempotency semantics deliberately and use one consistent error response
+  model across the API.
+- Choose the simplest contract that expresses the domain clearly and can evolve
+  without surprising consumers.
+
+### API model naming
+
+- Every API-facing request, response, and shared schema type must end with
+  `DTO`, for example `OrderDTO`, `CreateOrderRequestDTO`, or `ErrorDTO`.
+- Apply the suffix once, consistently, either in schema names or through shared
+  generator configuration. Do not hand-rename generated model classes.
+
 ## Template placeholders
 
 When creating a repository from this template, replace the project identity
