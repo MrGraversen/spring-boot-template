@@ -234,6 +234,40 @@ over bespoke abstractions.
 - Apply the suffix once, consistently, either in schema names or through shared
   generator configuration. Do not hand-rename generated model classes.
 
+## Spring Boot layering
+
+- Use a simple package structure centered on `configuration`, `data`,
+  `service`, and `util`. Add other packages only when they express a clear
+  responsibility, such as `facade` or an API boundary.
+- Organize `data` and `service` vertically by domain: for example,
+  `data.product` contains product entities and repositories, while
+  `service.product` contains product service-layer types.
+- Keep JPA entities and Spring Data repositories in `data.<domain>`. Define
+  entity indexes and unique constraints explicitly with JPA annotations.
+- Keep service-layer behavior in `service.<domain>`. Annotate each service
+  class with both `@Service` and class-level `@Transactional`.
+- A service may depend on at most one repository. Keep each
+  service-repository vertical autonomous.
+- When an operation genuinely needs multiple services or repositories,
+  coordinate it in a `facade` class. Do not turn one service into a general
+  cross-domain orchestration layer.
+
+### Identity and service operations
+
+- Persist a technical primary key as `Long`, but use a stable UUID represented
+  as `String` when domain objects reference or identify one another outside the
+  persistence boundary. Do not expose or couple domain behavior to primary
+  keys.
+- A domain service should normally expose a small, consistent baseline: for
+  `Product`, `createNew(CreateProduct)`, `get(String)`, `getAll()`,
+  `getAll(Pageable)`, `deleteAll()`, and `delete(String)`.
+- Model domain-specific changes as named command types and explicit methods.
+  For example, change a product name with `update(UpdateProductName)`, rather
+  than a generic setter or an ambiguous update payload.
+- Keep API DTOs at the API boundary. Map them to service commands and domain
+  types; service command types do not need a `DTO` suffix unless they are also
+  API-facing models.
+
 ## Template placeholders
 
 When creating a repository from this template, replace the project identity
