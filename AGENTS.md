@@ -166,6 +166,7 @@ implementation, not a cleanup step at the end.
 
 ### Formatting and review
 
+- Use two spaces for Java indentation. Do not use tabs.
 - Target a maximum line width of 120 columns. Do not optimize for a narrow
   editor viewport or treat a shorter limit as a reason to fragment otherwise
   readable code.
