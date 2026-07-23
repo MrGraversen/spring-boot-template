@@ -268,6 +268,24 @@ over bespoke abstractions.
   types; service command types do not need a `DTO` suffix unless they are also
   API-facing models.
 
+## Runtime configuration and optional integrations
+
+- A Spring Boot application must run directly from IntelliJ and with the
+  documented command-line command. Give ordinary properties sane local
+  defaults; only secrets such as passwords and external API keys may require
+  user-supplied values.
+- Hide external integrations and other high-complexity behavior behind a small
+  domain-facing interface. Provide an explicit mode or `enabled` property so a
+  simple local, passthrough, or disabled implementation remains available.
+- Use `@ConditionalOnProperty` to activate the implementation selected by the
+  configuration. Keep the property name, supported values, default behavior,
+  and fallback implementation clear in configuration and documentation.
+- Apply this pattern where it has a practical payoff: for example AI models,
+  CRM systems, authentication providers, and expensive processing pipelines.
+  Do not add a strategy layer for straightforward application code.
+- Keep configuration names shallow and domain-oriented. Avoid deeply nested
+  property trees or configuration types that add ceremony without clarity.
+
 ## Template placeholders
 
 When creating a repository from this template, replace the project identity
