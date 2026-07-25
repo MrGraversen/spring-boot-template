@@ -15,7 +15,7 @@ After creating a repository from this template:
 4. Update `spring.application.name`, the container image name, and the HTTP
    port.
 5. Change the template status in `AGENTS.md` to `ACTIVE`.
-6. Run `mvn verify` and `docker compose --file docker/compose.yaml up --build`.
+6. Run `mvn -ntp verify` and `docker compose --file docker/compose.yaml up --build`.
 
 ## Baseline
 
@@ -31,8 +31,8 @@ After creating a repository from this template:
 Requires Java 25 and Maven 3.6.3 or newer.
 
 ```shell
-mvn verify
-mvn --projects apps/example-service spring-boot:run
+mvn -ntp verify
+mvn -ntp --projects apps/example-service spring-boot:run
 ```
 
 The application health endpoint is available at

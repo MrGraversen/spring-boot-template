@@ -48,7 +48,7 @@ After the project identity has been confirmed and applied, change the status to
 ## Commands
 
 ```shell
-mvn --batch-mode --no-transfer-progress verify
+mvn --batch-mode -ntp verify
 docker compose --file docker/compose.yaml up --build
 ```
 
@@ -73,6 +73,26 @@ docker build --file docker/Dockerfile \
   that file.
 - Do not add a Maven Wrapper or Dependabot unless explicitly requested.
 - Do not commit generated `target/` directories.
+
+## Verification strategy
+
+- Start with the smallest meaningful verification for the change. Run targeted
+  unit tests for the changed behavior; do not run the entire Maven suite by
+  default.
+- Run `mvn verify` when the change has broad risk, such as a large refactor,
+  reactor or build-configuration change, cross-module change, or before a
+  release. Do not repeat an equivalent successful check without a new reason.
+- Use `-ntp` for Maven commands unless artifact-transfer output is needed to
+  diagnose a dependency download problem.
+- Use Maven's `-T` option when independent reactor modules make parallel work
+  likely to help. Do not add threads to a single-module or plugin-bound build
+  merely by habit.
+- Reuse incremental build output and dependency caches. Do not run `clean`
+  unless stale generated output or a build problem specifically calls for it.
+- Validate Docker and Compose proportionally: use `docker compose ... config`
+  for Compose-only changes, and build an image when the Dockerfile, build
+  context, or packaged application changes. Start containers only when runtime
+  wiring or behavior needs verification.
 
 ## Java code quality
 
@@ -301,7 +321,8 @@ to `ACTIVE`.
 
 ## Definition of done
 
-- `mvn verify` passes.
+- The smallest relevant test or verification command passes; run `mvn verify`
+  when the verification strategy requires it.
 - Docker or Compose changes are validated with an image build or
   `docker compose --file docker/compose.yaml config`.
 - Documentation and workflow matrices reflect any new application.
