@@ -74,6 +74,13 @@ docker build --file docker/Dockerfile \
 - Do not add a Maven Wrapper or Dependabot unless explicitly requested.
 - Do not commit generated `target/` directories.
 
+## Commit messages
+
+- Prefer a gitmoji subject over Conventional Commit prefixes.
+- Keep commit subjects concise and descriptive.
+- Add detail lines only when they clarify important changes or decisions. Keep
+  them brief and high-value; omit them when the subject is sufficient.
+
 ## Verification strategy
 
 - Start with the smallest meaningful verification for the change. Run targeted
