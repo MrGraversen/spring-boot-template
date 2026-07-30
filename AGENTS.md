@@ -164,11 +164,13 @@ implementation, not a cleanup step at the end.
 
 ### Lombok
 
-- Use Lombok where it removes mechanical boilerplate without hiding domain
+- Prefer Lombok for mechanical boilerplate when it does not hide domain
   behavior or framework requirements.
-- Prefer `@RequiredArgsConstructor` for dependency injection and immutable
+- Prefer `@RequiredArgsConstructor` for constructor injection and immutable
   collaborators. Add `@NonNull` when a generated constructor should enforce a
   runtime null check.
+- Use `@Getter` for deliberate read access and `@Slf4j` for class logging;
+  do not write manual logger declarations or use field injection.
 - Never use `@Data` on JPA entities. Do not generate entity-wide setters,
   `toString`, `equals`, or `hashCode` methods.
 - Give JPA entities a protected no-argument constructor, normally with
@@ -181,6 +183,13 @@ implementation, not a cleanup step at the end.
   when entity identity semantics matter.
 - Do not use Lombok builders to bypass invariants. Use a named factory or an
   explicit constructor when object creation has rules.
+
+### Logging
+
+- Use parameterized log messages; do not concatenate values into log strings.
+- Never log passwords, tokens, secrets, or sensitive personal data.
+- Keep logs useful and contextual without duplicating the same event at multiple
+  layers.
 
 ### Abstractions and temporary implementations
 
