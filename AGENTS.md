@@ -18,13 +18,18 @@ the initialization with them.
 Before initialization, agents may only:
 
 - Inspect the repository without changing it.
-- Help choose or replace the project identity values listed below.
+- Help choose or replace the project identity and project profile values listed
+  below.
 - Update documentation related to initialization.
 - Proceed when the user explicitly asks to initialize the template or
   explicitly authorizes work despite the uninitialized status.
 
-After the project identity has been confirmed and applied, change the status to
-`ACTIVE`.
+The user must explicitly confirm the project identity and set both project
+profile values to `true` or `false` before coding may begin. The AI must not
+infer these values.
+
+After the project identity and project profile have been confirmed and applied,
+change the status to `ACTIVE`.
 
 ### Project identity
 
@@ -33,6 +38,26 @@ After the project identity has been confirmed and applied, change the status to
 - Java package: `io.graversen.exampleservice`
 - Container image: `example-service`
 - HTTP port: `8080`
+
+### Project profile
+
+- Commercial: `UNSET`
+- Business-critical: `UNSET`
+
+## Project profile guidance
+
+The values are independent. Use them to scale engineering effort to the
+project's actual risk.
+
+- Both `false`: Treat as a personal or hobby project. Prefer the simplest
+  solution that works; avoid speculative abstractions, infrastructure, and
+  ceremony.
+- `Commercial: true`: Expect real users, data, security, and supportability,
+  but keep the solution proportionate unless it is also business-critical.
+- `Business-critical: true`: Apply stronger testing, resilience,
+  observability, security, and recoverability regardless of commercial status.
+
+Basic correctness, security, and data safety apply in every project.
 
 ## Repository layout
 
