@@ -28,8 +28,15 @@ The user must explicitly confirm the project identity and set both project
 profile values to `true` or `false` before coding may begin. The AI must not
 infer these values.
 
-After the project identity and project profile have been confirmed and applied,
-change the status to `ACTIVE`.
+Initialization is complete only when:
+
+- All project identity values have been replaced consistently.
+- No unintended template placeholders or `example-service` references remain.
+- Package paths, Maven coordinates, module names, container image names, and
+  workflow configuration agree.
+- Both project profile values have been explicitly set.
+- The smallest relevant build or test verification passes.
+- The template status is changed to `ACTIVE`.
 
 ### Project identity
 
@@ -58,6 +65,42 @@ project's actual risk.
   observability, security, and recoverability regardless of commercial status.
 
 Basic correctness, security, and data safety apply in every project.
+
+## Engineering philosophy
+
+Build the smallest complete solution that satisfies the current requirement.
+
+Prefer clarity, conventional Spring solutions, and direct control flow over
+speculative flexibility. Treat abstractions, dependencies, configuration,
+infrastructure, retries, caching, asynchronous processing, and extra layers
+as costs that require a current requirement or demonstrated risk.
+
+Do not optimize for hypothetical future consumers. A diligent engineer makes
+trade-offs explicit, preserves correctness, and leaves a coherent change.
+
+## AI working method
+
+- Inspect relevant code, configuration, tests, and existing patterns before editing.
+- Clarify acceptance criteria, assumptions, and non-goals before material changes.
+- Ask when ambiguity affects architecture, security, data, or external behavior.
+  Otherwise, state a reasonable assumption and proceed.
+- Keep changes focused and do not perform unrelated refactors.
+- Verify the smallest meaningful scope, review the final diff, and report what
+  changed, what was verified, and any remaining risks.
+
+## Blockers and escalation
+
+Use the project's intended mechanisms first. Do not pursue completion at any cost.
+
+- Do not extract, copy, or patch classes from dependency JARs to bypass a missing
+  or incompatible dependency.
+- Do not introduce opaque one-off scripts, modify local dependency caches, patch
+  generated artifacts, bypass Maven's normal lifecycle, or weaken checks merely
+  to force progress.
+- If a blocker cannot be resolved with a straightforward, supported change and
+  it blocks progress, stop and ask the user.
+- When escalating, report the error, relevant evidence, conventional approaches
+  attempted, and the decision or permission needed.
 
 ## Repository layout
 
