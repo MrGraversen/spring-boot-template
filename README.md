@@ -8,14 +8,16 @@ After creating a repository from this template:
 
 1. Update the project identity in `AGENTS.md` while leaving its template status
    as `UNINITIALIZED`.
-2. Rename `apps/example-service` and update the module path in the root
+2. Choose whether `Runtime execution` should remain `AGENT_ALLOWED` or be set
+   to `USER_ONLY` for sensitive or externally connected projects.
+3. Rename `apps/example-service` and update the module path in the root
    `pom.xml`, `docker/compose.yaml`, and the GitHub container-image matrix.
-3. Replace the Maven coordinates and `io.graversen.exampleservice` Java
+4. Replace the Maven coordinates and `io.graversen.exampleservice` Java
    package.
-4. Update `spring.application.name`, the container image name, and the HTTP
+5. Update `spring.application.name`, the container image name, and the HTTP
    port.
-5. Change the template status in `AGENTS.md` to `ACTIVE`.
-6. Run `mvn -ntp verify` and `docker compose --file docker/compose.yaml up --build`.
+6. Change the template status in `AGENTS.md` to `ACTIVE`.
+7. Run the permitted verification commands for the selected runtime mode.
 
 ## Baseline
 
@@ -57,7 +59,10 @@ docker compose --file docker/compose.infrastructure.yaml up -d
 
 This template currently has no required external infrastructure. Add only the
 databases, brokers, or other dependencies needed by the initialized project to
-this file; do not add application services to it.
+this file; do not add application services to it. Expose the required local
+ports and use simple development-only credentials. Give the Compose project,
+services, networks, and volumes short, descriptive names; let Compose derive
+container names unless a stable explicit name is required.
 
 ## Layout
 

@@ -26,6 +26,21 @@ Before initialization, agents may only:
 After the project identity has been confirmed and applied, change the status to
 `ACTIVE`.
 
+## Agent runtime permission
+
+**Runtime execution: AGENT_ALLOWED**
+
+- `AGENT_ALLOWED`: agents may start applications, containers, and local
+  infrastructure when proportionate verification requires it.
+- `USER_ONLY`: agents must not start applications or containers, exercise live
+  integrations, or run tests that contact external systems. Ask the user to run
+  those steps and share the relevant result instead.
+- `USER_ONLY` still permits compilation, isolated unit tests, static checks,
+  Compose configuration validation, and image builds that do not execute the
+  application or contact external systems.
+- Choose `USER_ONLY` when runtime access could involve sensitive data,
+  credentials, costly APIs, or unreliable external integrations.
+
 ### Project identity
 
 - Service name: `example-service`
@@ -70,7 +85,18 @@ docker build --file docker/Dockerfile \
 - Keep `docker/compose.yaml` focused on the complete local development stack.
 - Put databases, brokers, and other external dependencies in
   `docker/compose.infrastructure.yaml`; do not place application services in
-  that file.
+  that file. Treat it as the development-infrastructure entry point for
+  applications run from IntelliJ or the command line.
+- Expose the ports needed for local development from infrastructure services.
+  Use simple development credentials and authentication settings there; never
+  mistake that file for a production security configuration.
+- Declare a concise Compose project `name` that identifies the repository or
+  stack. Use clear, domain-based service names.
+- Let Compose derive container names from the project and service names. Set
+  `container_name` only when a stable explicit name is genuinely required.
+- Give declared networks and volumes short responsibility-based names, such as
+  `development` or `postgres-data`. Avoid redundant prefixes because Compose
+  already scopes resources by project name.
 - Do not add a Maven Wrapper or Dependabot unless explicitly requested.
 - Do not commit generated `target/` directories.
 
@@ -100,6 +126,22 @@ docker build --file docker/Dockerfile \
   for Compose-only changes, and build an image when the Dockerfile, build
   context, or packaged application changes. Start containers only when runtime
   wiring or behavior needs verification.
+
+## Blockers
+
+- Perform only enough focused diagnosis to identify a blocker confidently. Do
+  not repeatedly run the same failing command or pursue increasingly elaborate
+  workarounds with diminishing value.
+- When progress depends on something outside the repository or agent's control,
+  such as proxy settings, credentials, permissions, missing software, machine
+  configuration, or an unavailable external service, stop the blocked work and
+  bring it back to the user.
+- Do not install system software, alter global configuration, weaken security,
+  or introduce a project workaround solely to bypass an environmental blocker
+  unless the user explicitly approves that approach.
+- Report the blocker concisely: what failed, the relevant error or evidence,
+  what remains unverified, and the smallest action or decision needed from the
+  user. Continue only independent work that still has clear value.
 
 ## Java code quality
 
