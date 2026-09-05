@@ -18,13 +18,25 @@ the initialization with them.
 Before initialization, agents may only:
 
 - Inspect the repository without changing it.
-- Help choose or replace the project identity values listed below.
+- Help choose or replace the project identity and project profile values listed
+  below.
 - Update documentation related to initialization.
 - Proceed when the user explicitly asks to initialize the template or
   explicitly authorizes work despite the uninitialized status.
 
-After the project identity has been confirmed and applied, change the status to
-`ACTIVE`.
+The user must explicitly confirm the project identity and set both project
+profile values to `true` or `false` before coding may begin. The AI must not
+infer these values.
+
+Initialization is complete only when:
+
+- All project identity values have been replaced consistently.
+- No unintended template placeholders or `example-service` references remain.
+- Package paths, Maven coordinates, module names, container image names, and
+  workflow configuration agree.
+- Both project profile values have been explicitly set.
+- The smallest relevant build or test verification passes.
+- The template status is changed to `ACTIVE`.
 
 ## Agent runtime permission
 
@@ -48,6 +60,62 @@ After the project identity has been confirmed and applied, change the status to
 - Java package: `io.graversen.exampleservice`
 - Container image: `example-service`
 - HTTP port: `8080`
+
+### Project profile
+
+- Commercial: `UNSET`
+- Business-critical: `UNSET`
+
+## Project profile guidance
+
+The values are independent. Use them to scale engineering effort to the
+project's actual risk.
+
+- Both `false`: Treat as a personal or hobby project. Prefer the simplest
+  solution that works; avoid speculative abstractions, infrastructure, and
+  ceremony.
+- `Commercial: true`: Expect real users, data, security, and supportability,
+  but keep the solution proportionate unless it is also business-critical.
+- `Business-critical: true`: Apply stronger testing, resilience,
+  observability, security, and recoverability regardless of commercial status.
+
+Basic correctness, security, and data safety apply in every project.
+
+## Engineering philosophy
+
+Build the smallest complete solution that satisfies the current requirement.
+
+Prefer clarity, conventional Spring solutions, and direct control flow over
+speculative flexibility. Treat abstractions, dependencies, configuration,
+infrastructure, retries, caching, asynchronous processing, and extra layers
+as costs that require a current requirement or demonstrated risk.
+
+Do not optimize for hypothetical future consumers. A diligent engineer makes
+trade-offs explicit, preserves correctness, and leaves a coherent change.
+
+## AI working method
+
+- Inspect relevant code, configuration, tests, and existing patterns before editing.
+- Clarify acceptance criteria, assumptions, and non-goals before material changes.
+- Ask when ambiguity affects architecture, security, data, or external behavior.
+  Otherwise, state a reasonable assumption and proceed.
+- Keep changes focused and do not perform unrelated refactors.
+- Verify the smallest meaningful scope, review the final diff, and report what
+  changed, what was verified, and any remaining risks.
+
+## Blockers and escalation
+
+Use the project's intended mechanisms first. Do not pursue completion at any cost.
+
+- Do not extract, copy, or patch classes from dependency JARs to bypass a missing
+  or incompatible dependency.
+- Do not introduce opaque one-off scripts, modify local dependency caches, patch
+  generated artifacts, bypass Maven's normal lifecycle, or weaken checks merely
+  to force progress.
+- If a blocker cannot be resolved with a straightforward, supported change and
+  it blocks progress, stop and ask the user.
+- When escalating, report the error, relevant evidence, conventional approaches
+  attempted, and the decision or permission needed.
 
 ## Repository layout
 
@@ -200,6 +268,13 @@ implementation, not a cleanup step at the end.
   and its rules. For non-entity types, use a named factory or an explicit
   constructor when object creation has rules; do not use Lombok builders to
   bypass those rules.
+
+### Logging
+
+- Use parameterized log messages; do not concatenate values into log strings.
+- Never log passwords, tokens, secrets, or sensitive personal data.
+- Keep logs useful and contextual without duplicating the same event at multiple
+  layers.
 
 ### Logging
 
