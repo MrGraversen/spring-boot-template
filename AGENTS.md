@@ -85,18 +85,7 @@ docker build --file docker/Dockerfile \
 - Keep `docker/compose.yaml` focused on the complete local development stack.
 - Put databases, brokers, and other external dependencies in
   `docker/compose.infrastructure.yaml`; do not place application services in
-  that file. Treat it as the development-infrastructure entry point for
-  applications run from IntelliJ or the command line.
-- Expose the ports needed for local development from infrastructure services.
-  Use simple development credentials and authentication settings there; never
-  mistake that file for a production security configuration.
-- Declare a concise Compose project `name` that identifies the repository or
-  stack. Use clear, domain-based service names.
-- Let Compose derive container names from the project and service names. Set
-  `container_name` only when a stable explicit name is genuinely required.
-- Give declared networks and volumes short responsibility-based names, such as
-  `development` or `postgres-data`. Avoid redundant prefixes because Compose
-  already scopes resources by project name.
+  that file.
 - Do not add a Maven Wrapper or Dependabot unless explicitly requested.
 - Do not commit generated `target/` directories.
 
@@ -126,22 +115,6 @@ docker build --file docker/Dockerfile \
   for Compose-only changes, and build an image when the Dockerfile, build
   context, or packaged application changes. Start containers only when runtime
   wiring or behavior needs verification.
-
-## Blockers
-
-- Perform only enough focused diagnosis to identify a blocker confidently. Do
-  not repeatedly run the same failing command or pursue increasingly elaborate
-  workarounds with diminishing value.
-- When progress depends on something outside the repository or agent's control,
-  such as proxy settings, credentials, permissions, missing software, machine
-  configuration, or an unavailable external service, stop the blocked work and
-  bring it back to the user.
-- Do not install system software, alter global configuration, weaken security,
-  or introduce a project workaround solely to bypass an environmental blocker
-  unless the user explicitly approves that approach.
-- Report the blocker concisely: what failed, the relevant error or evidence,
-  what remains unverified, and the smallest action or decision needed from the
-  user. Continue only independent work that still has clear value.
 
 ## Java code quality
 
@@ -206,23 +179,34 @@ implementation, not a cleanup step at the end.
 
 ### Lombok
 
-- Use Lombok where it removes mechanical boilerplate without hiding domain
+- Prefer Lombok for mechanical boilerplate when it does not hide domain
   behavior or framework requirements.
-- Prefer `@RequiredArgsConstructor` for dependency injection and immutable
+- Prefer `@RequiredArgsConstructor` for constructor injection and immutable
   collaborators. Add `@NonNull` when a generated constructor should enforce a
   runtime null check.
-- Never use `@Data` on JPA entities. Do not generate entity-wide setters,
-  `toString`, `equals`, or `hashCode` methods.
-- Give JPA entities a protected no-argument constructor, normally with
-  `@NoArgsConstructor(access = AccessLevel.PROTECTED)`.
-- Keep entity state changes behind explicit domain methods. Generate only the
-  getters that callers genuinely need, and never generate setters merely for
-  convenience.
+- Use `@Getter` for deliberate read access and `@Slf4j` for class logging;
+  do not write manual logger declarations or use field injection.
+- Never use `@Data` on JPA entities. Use Lombok `@Getter` and `@Setter` for
+  entity access; services use these accessors to read and change persistence
+  state. Do not add handwritten accessors or entity operation methods.
+- Give JPA entities a Lombok-generated no-argument constructor with
+  `@NoArgsConstructor`. Make it public so services in `service.<domain>` can
+  construct entities directly.
+- Do not add entity `toString`, `equals`, or `hashCode` implementations,
+  whether handwritten or generated.
 - Exclude lazy associations and large or sensitive fields from generated
-  `toString`, equality, and hash-code logic. Prefer explicit implementations
-  when entity identity semantics matter.
-- Do not use Lombok builders to bypass invariants. Use a named factory or an
-  explicit constructor when object creation has rules.
+  `toString`, equality, and hash-code logic on non-entity types.
+- Do not use builders or factories on entities. Services own entity creation
+  and its rules. For non-entity types, use a named factory or an explicit
+  constructor when object creation has rules; do not use Lombok builders to
+  bypass those rules.
+
+### Logging
+
+- Use parameterized log messages; do not concatenate values into log strings.
+- Never log passwords, tokens, secrets, or sensitive personal data.
+- Keep logs useful and contextual without duplicating the same event at multiple
+  layers.
 
 ### Abstractions and temporary implementations
 
@@ -320,13 +304,24 @@ over bespoke abstractions.
   `service.product` contains product service-layer types.
 - Keep JPA entities and Spring Data repositories in `data.<domain>`. Define
   entity indexes and unique constraints explicitly with JPA annotations.
+- Entities are persistence structures only: fields, declarative persistence
+  mappings, and Lombok-generated getters, setters, and a no-argument
+  constructor. Do not put handwritten methods, factories, custom constructors,
+  validation, lifecycle callbacks, relationship helpers, or workflow logic on
+  entities. Even narrow mutation methods belong in services.
 - Keep service-layer behavior in `service.<domain>`. Annotate each service
   class with both `@Service` and class-level `@Transactional`.
+- Services own all entity operations: creation, lookup, validation, field
+  mutation, relationship maintenance, status transitions, timestamps, and
+  deletion. Use entity getters and setters within service operations; keep
+  transaction boundaries and persistence calls in the service layer.
 - A service may depend on at most one repository. Keep each
   service-repository vertical autonomous.
 - When an operation genuinely needs multiple services or repositories,
   coordinate it in a `facade` class. Do not turn one service into a general
   cross-domain orchestration layer.
+- Facades and API handlers invoke service operations instead of manipulating
+  entities or accessing repositories directly.
 
 ### Identity and service operations
 
@@ -338,8 +333,9 @@ over bespoke abstractions.
   `Product`, `createNew(CreateProduct)`, `get(String)`, `getAll()`,
   `getAll(Pageable)`, `deleteAll()`, and `delete(String)`.
 - Model domain-specific changes as named command types and explicit methods.
-  For example, change a product name with `update(UpdateProductName)`, rather
-  than a generic setter or an ambiguous update payload.
+  For example, expose `update(UpdateProductName)` on the service and call
+  `product.setName(...)` inside it. The service API expresses the operation;
+  the entity setter only assigns persistence state.
 - Keep API DTOs at the API boundary. Map them to service commands and domain
   types; service command types do not need a `DTO` suffix unless they are also
   API-facing models.
