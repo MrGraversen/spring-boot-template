@@ -275,6 +275,23 @@ implementation, not a cleanup step at the end.
 - Never log passwords, tokens, secrets, or sensitive personal data.
 - Keep logs useful and contextual without duplicating the same event at multiple
   layers.
+- Make impactful workflows understandable from UX interactions and logs alone.
+  Log accepted uploads, explicit retries, durable outcome transitions, and external
+  AI calls. Keep routine reads, polling, and method entry/exit quiet.
+- Use stable `event=...` names and searchable `key=value` fields. Include the public
+  resource ID and attempt number across asynchronous work; scope and clear any MDC
+  context on pooled threads. Do not log user identity as a correlation shortcut.
+- At external-call boundaries, log the selected provider/model before invocation.
+  Record elapsed milliseconds and the outcome of slow operations. Safe summaries
+  such as item counts and validation flags are useful; receipt contents, images,
+  filenames, prompts, responses, and raw provider exception messages are not.
+- Log success only after the owning service transaction returns successfully.
+  Use INFO for normal lifecycle events, WARN for retryable failures or rejected
+  work, and ERROR when an operation cannot record its outcome. Include the failing
+  stage and a safe error type; avoid duplicate failure logs at every layer.
+- Prefer a few direct SLF4J events over new observability infrastructure. Verify
+  correlation, success/failure coverage, and sensitive-data exclusion with focused
+  tests when adding logging to a meaningful workflow.
 
 ### Abstractions and temporary implementations
 
@@ -293,15 +310,16 @@ implementation, not a cleanup step at the end.
 
 ### Formatting and review
 
-- Use two spaces for Java indentation. Do not use tabs.
-- Target a maximum line width of 120 columns. Do not optimize for a narrow
-  editor viewport or treat a shorter limit as a reason to fragment otherwise
-  readable code.
+- Follow `.editorconfig` for formatting settings, including indentation,
+  line endings, and maximum line length. Keep those settings in that file
+  rather than duplicating them here.
+- Do not optimize for a narrow editor viewport or fragment otherwise readable
+  code unnecessarily.
 - Keep declarations, record components, method signatures, method calls, and
   exception construction on one line when the complete expression fits within
-  120 columns and remains readable. In particular, do not wrap a line merely
+  the configured line length and remains readable. Do not wrap a line merely
   because a formatter prefers an earlier syntactic break.
-- When an expression genuinely exceeds 120 columns or becomes difficult to
+- When an expression exceeds the configured line length or becomes difficult to
   scan, wrap it by logical unit. Prefer one argument, chained operation, or
   condition per continuation line rather than arbitrary breaks.
 
